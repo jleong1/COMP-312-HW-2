@@ -54,9 +54,42 @@ public class readLibraryCSV {
 		}
 	}
 }
+	//get the total number of computer sessions in Chicago
+	public Integer getAllSessions(){
+		int sessions = 0;
+		//need to retrieve each YTD of each location then convert it to int, then add it;
+		for(int i = 0; i<computerSessions.length;i++){
+			//
+			i+= ;
+		}
+		return sessions;
+	}
+	
+	//get the total number of circulation (book rentals, renewals, etc)
+	public Integer getAllCirculation(){
+		int circulation = 0;
+		
+		return circulation;
+	}
+	
+	//get the total number of visitors in Chicago
+	public Integer getAllVisitors(){
+		int sessions = 0;
+		
+		return sessions;
+	}
 //funciton compare visitors to computer sessions
 //function compare visitors to circulation
 //function compare visitors ot wifi usage
+	public void compareVisitors(){
+		
+	}
+
 //function(s) that finds most popular location (for each thing)
+
+	
 //compare above outcomes to eachother and then decide what is most and/or least used, also when and where
+	public void getPopularService(){
+		
+	}
 }
