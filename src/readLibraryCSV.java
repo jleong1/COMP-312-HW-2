@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 
 public class readLibraryCSV {
@@ -21,18 +20,20 @@ public class readLibraryCSV {
 		library.run("Libraries_-_2014_Computer_Sessions_by_Location.csv", computerSessions);
 		library.run("Libraries_-_2014_Visitors_by_Location.csv", visitors);
 		library.run("Libraries_-_WiFi_Usage__2011-2014_.csv", wifiUse);
-		
+
 		int c = library.getAllCirculation(circulation);
 		int s = library.getAllSessions(computerSessions);
 		int v = library.getAllVisitors(visitors);
 		int w = library.getWifi2014(wifiUse);
 		
 		library.getPopularService(library.getVisitorPercentage(v, w, c, s));
-		
+
 		}
 	
 	//reads the csv files and stores it in an array list
 	//got pointers from http://www.mkyong.com/java/how-to-read-and-parse-csv-file-in-java/
+	//note decide to not parse info even farther, ex, there are many numbers that could have been made to int, but they were mixed with strings
+	//so I decided that I would take string and parse them into ints if need be
 	public void run(String resource, ArrayList<String[]> csv) {
 		InputStream source = getClass().getClassLoader().getResourceAsStream(resource);
 		BufferedReader br = null;
@@ -42,7 +43,7 @@ public class readLibraryCSV {
 			br = new BufferedReader(new InputStreamReader(source));
 			while ((line = br.readLine()) != null) {
 			String [] location = line.split(cvsSplitBy);
-			csv.add(location);	
+			csv.add(location);
 			}
 	} catch (FileNotFoundException e) {
 		e.printStackTrace();
@@ -68,6 +69,7 @@ public class readLibraryCSV {
 			int ytd = Integer.parseInt(temp[16]);
 			sessions+= ytd ;
 		}
+		System.out.println("The total number of computer sessions during 2014 for all libraries in Chicago are "+sessions);
 		return sessions;
 	}
 	
@@ -80,6 +82,7 @@ public class readLibraryCSV {
 			int ytd = Integer.parseInt(temp[16]);
 			books+= ytd ;
 		}
+		System.out.println("The total number of circulations (book rentals, renewals, etc) during 2014 for all libraries in Chicago are "+books);
 		return books;
 	}
 	
@@ -92,6 +95,7 @@ public class readLibraryCSV {
 			int ytd = Integer.parseInt(temp[16]);
 			visitors+= ytd ;
 		}
+		System.out.println("The total number of visitors during 2014 for all libraries in Chicago are "+visitors);
 		return visitors;
 	}
 	
@@ -99,24 +103,24 @@ public class readLibraryCSV {
 	//the following method finds the total number of wifi sessions for 2014
 	public Integer getWifi2014(ArrayList<String[]> wifiSess){
 		int wifi = 0;
-		
 		//checks for the year 2014, and then adds number of sessions all together
-		for(int i=0;i<wifiSess.size();i++){
-			if(wifiSess.get(i)[1] == "2014"){
-				int temp = Integer.parseInt(wifiSess.get(i)[2]);
-				wifi +=temp;
+		for(int i = 1; i<wifiSess.size();i++){
+			String temp [] = wifiSess.get(i);
+			if(temp[1].equals("2014")){
+			int mtd = Integer.parseInt(temp[2]);
+			wifi+= mtd ;
 			}
 		}
-		
+		System.out.println("The total number of wifi sessions during 2014 for all libraries in Chicago are "+wifi);
 		return wifi;
 	}
 	
 	//methods compares total visitors to total computer sessions, wifi usage, and computer sessions, 
 	// which will return a percentage rate respective to each comparison 
 	public int[] getVisitorPercentage(int visitors, int wifi, int circulation, int sessions){
-		 int rateOfWifi= 100*(wifi/visitors);
-		 int rateOfCirculation= 100*(circulation/visitors);
-		 int rateOfSessions= 100*(sessions/visitors);
+		 int rateOfWifi= (int)(((double)wifi/(double)visitors) * 100);
+		 int rateOfCirculation= (int)(((double)circulation/(double)visitors) * 100);
+		 int rateOfSessions= (int)(((double)sessions/(double)visitors) * 100);
 		 int [] ratesOfservice = {rateOfWifi, rateOfCirculation,rateOfSessions};
 		 
 		 //The following print statements inform user of the different percentages, as well as possibly explain some outcomes.  
@@ -128,29 +132,31 @@ public class readLibraryCSV {
 		 System.out.println("The percentage of visitors at Chicago libraries who have rented, borrowed, or some similar type of book circulation  are " +rateOfCirculation+ "%");
 		 //would have liked to be more specific but couldn't find a data set specific enough that breaks down each category of circulations
 		 if(rateOfCirculation>100){
-				System.out.println("Percentage over 100 implies that visitors borrow more than one book, or for every visitors that is at least one circulation to their name");
+				System.out.println("Percentage over 100 implies that visitors borrow more than one book, or for every visitors there is at least one circulation to their name");
 			 }
 		 
-		 System.out.println("The percentage of visitors at Chicago librarieswho use computers are " +rateOfSessions+ "%");
-		 if(rateOfCirculation>100){
+		 System.out.println("The percentage of visitors at Chicago libraries who use computers are " +rateOfSessions+ "%");
+		 if(rateOfSessions>100){
 				System.out.println("Percentage over 100 implies that visitors have multiple computer sessions in the same trip");
 			 }
 		 
 		 return ratesOfservice;
 	}
-
-//function(s) that finds most popular location (for each thing)
-	public String findPopularlocation(){
-		String location = "";
-		
-		return location;
-	}
 	
-	//compare above outcomes to eachother and then decide what is most and/or least used, also when and where
-	public void getPopularService(int[] percentages){
-		if(percentages[0]>percentages[1]&& percentages[0]>2){
-			
-		}else if
+	//compare above outcomes to eachother and then decide what service is most used
+	public String getPopularService(int[] percentages){
+		String service = "";
+		if(percentages[0]>percentages[1]&& percentages[0]>percentages[2]){
+			service = "wifi";
+			System.out.println("The percentage of wifi sessions to visitors, "+percentages[0]+"%, is greater than the percentage of computer sessions to visitors and circulations to visitors");
+		}else if(percentages[1]>percentages[0]&& percentages[1]>percentages[2]){
+			service = "circulations";
+			System.out.println("The percentage of circulations to visitors, "+percentages[1]+"%, is greater than the percentage of computer sessions to visitors and wifi sessions to visitors");
+		}else if(percentages[2]>percentages[1]&& percentages[2]>percentages[1]){
+			service = "computers";
+			System.out.println("The percentage of computer sessions to visitors, "+percentages[2]+"%, is greater than the percentage of wifi sessions to visitors and circulations to visitors");
+		}
+		return service;
 		
 	}
 }
